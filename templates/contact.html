@@ -60,14 +60,14 @@
                 <br>
                 <div id="success"></div>
                 <button type="submit" class="btn btn-primary" id="sendMessageButton">Send</button>
-                {% with messages = get_flashed_messages() %}
+            </form>
+            {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 {% for message in messages %}
                 <p>{{ message }}</p>
                 {% endfor %}
                 {% endif %}
                 {% endwith %}
-            </form>
         </div>
     </div>
 </div>
