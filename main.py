@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -10,6 +10,7 @@ from flask_gravatar import Gravatar
 from functools import wraps
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+import smtplib
 import os
 
 
@@ -168,10 +169,23 @@ def about():
     return render_template("about.html", logged_in=current_user.is_authenticated)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
     if not current_user.is_authenticated:
         return redirect(url_for("login"))
+    if request.method == "POST":
+        with smtplib.SMTP('smtp.gmail.com') as connection:
+            connection.starttls()
+            connection.login(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
+            connection.sendmail(from_addr=os.environ.get("USERNAME"),
+                                to_addrs=os.environ.get("USERNAME"),
+                                msg=f"Subject: Contact from: {request.form.get('name')}\n\n"
+                                    f"Sender's email: {request.form.get('email')}\n"
+                                    f"Sender's name: {request.form.get('name')}\n"
+                                    f"Sender's phone number: {request.form.get('phone')}\n"
+                                    f"Message: {request.form.get('message')}")
+            flash("Contact form sent successfully!")
+            return redirect(url_for("contact"))
     return render_template("contact.html", logged_in=current_user.is_authenticated)
 
 
