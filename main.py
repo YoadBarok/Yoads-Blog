@@ -175,11 +175,11 @@ def contact():
         return redirect(url_for("login"))
     form = ContactForm()
     if form.validate_on_submit():
-        with smtplib.SMTP('smtp-mail.outlook.com') as connection:
+        with smtplib.SMTP('smtp.gmail.com') as connection:
             connection.starttls()
-            connection.login(os.environ.get("USERNAME"),
-                             os.environ.get("PASSWORD"))
-            connection.sendmail(from_addr=os.environ.get("USERNAME"),
+            connection.login("bubanpython@gmail.com",
+                             "Aa22899822")
+            connection.sendmail(from_addr="bubanpython@gmail.com",
                                 to_addrs="bubanpython@gmail.com",
                                 msg=f"Subject: Contact from: {form.name.data}\n\n"
                                     f"Sender's email: {form.email.data}\n"
