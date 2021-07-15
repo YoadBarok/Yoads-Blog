@@ -27,6 +27,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+USERNAME = os.environ.get("USERNAME")
+PASSWORD = os.environ.get("PASSWORD")
+
 
 gravatar = Gravatar(app,
                     size=100,
@@ -177,10 +180,10 @@ def contact():
     if form.validate_on_submit():
         with smtplib.SMTP('smtp.gmail.com') as connection:
             connection.starttls()
-            connection.login(os.environ.get("USERNAME"),
-                             os.environ.get("PASSWORD"))
-            connection.sendmail(from_addr=os.environ.get("USERNAME"),
-                                to_addrs=os.environ.get("USERNAME"),
+            connection.login(USERNAME,
+                             PASSWORD)
+            connection.sendmail(from_addr=USERNAME,
+                                to_addrs=USERNAME,
                                 msg=f"Subject: Contact from: {form.name.data}\n\n"
                                     f"Sender's email: {form.email.data}\n"
                                     f"Sender's name: {form.name.data}\n"
