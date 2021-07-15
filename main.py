@@ -5,7 +5,7 @@ from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm, CreateUserForm, LoginForm, CommentForm
+from forms import CreatePostForm, CreateUserForm, LoginForm, CommentForm, ContactForm
 from flask_gravatar import Gravatar
 from functools import wraps
 from sqlalchemy import Table, Column, Integer, ForeignKey
@@ -173,20 +173,21 @@ def about():
 def contact():
     if not current_user.is_authenticated:
         return redirect(url_for("login"))
-    if request.method == "POST":
+    form = ContactForm()
+    if form.validate_on_submit():
         with smtplib.SMTP('smtp.gmail.com') as connection:
             connection.starttls()
-            connection.login(os.environ.get("USERNAME"), os.environ.get("PASSWORD"))
-            connection.sendmail(from_addr=os.environ.get("USERNAME"),
-                                to_addrs=os.environ.get("USERNAME"),
-                                msg=f"Subject: Contact from: {request.form.get('name')}\n\n"
-                                    f"Sender's email: {request.form.get('email')}\n"
-                                    f"Sender's name: {request.form.get('name')}\n"
-                                    f"Sender's phone number: {request.form.get('phone')}\n"
-                                    f"Message: {request.form.get('message')}")
+            connection.login(os.environ.get("USERNAME", "bubanpython@gmail.com"),
+                             os.environ.get("PASSWORD", "Aa22899822"))
+            connection.sendmail(from_addr=os.environ.get("USERNAME", "bubanpython@gmail.com"),
+                                to_addrs=os.environ.get("USERNAME", "bubanpython@gmail.com"),
+                                msg=f"Subject: Contact from: {form.name.data}\n\n"
+                                    f"Sender's email: {form.email.data}\n"
+                                    f"Sender's name: {form.name.data}\n"
+                                    f"Message: {form.message.data}")
             flash("Contact form sent successfully!")
-            return redirect(url_for("contact"))
-    return render_template("contact.html", logged_in=current_user.is_authenticated)
+            return redirect(url_for("contact", form=form))
+    return render_template("contact.html", logged_in=current_user.is_authenticated, form=form)
 
 
 @app.route("/new-post", methods=["GET", "POST"])
