@@ -177,8 +177,8 @@ def contact():
     if form.validate_on_submit():
         with smtplib.SMTP('smtp.gmail.com') as connection:
             connection.starttls()
-            connection.login("bubanpython@gmail.com",
-                             "Aa22899822")
+            connection.login(os.environ.get("USERNAME"),
+                             os.environ.get("PASSWORD"))
             connection.sendmail(from_addr=os.environ.get("USERNAME"),
                                 to_addrs=os.environ.get("USERNAME"),
                                 msg=f"Subject: Contact from: {form.name.data}\n\n"
